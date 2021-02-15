@@ -1,0 +1,12 @@
+catkin_ws/.catkin_workspace
+catkin_ws/build/
+catkin_ws/devel/
+catkin_ws/src/CMakeLists.txt
+catkin_ws/src/nmea_navsat_driver/src/libnmea_navsat_driver/checksum_utils.pyc
+catkin_ws/src/nmea_navsat_driver/src/libnmea_navsat_driver/driver.pyc
+catkin_ws/src/nmea_navsat_driver/src/libnmea_navsat_driver/nodes/__init__.pyc
+catkin_ws/src/nmea_navsat_driver/src/libnmea_navsat_driver/nodes/nmea_serial_driver.pyc
+catkin_ws/src/nmea_navsat_driver/src/libnmea_navsat_driver/parser.pyc
+docker_exec
+docker_run
+
