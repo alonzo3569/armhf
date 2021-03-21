@@ -1,0 +1,23 @@
+<launch>
+
+    <!-- Params -->
+    <arg name="gps_port" default="/dev/ttyUSB0"/>
+    <arg name="gps_baud" default="4800"/>
+    <arg name="imu_config_file" default="$(find razor_imu_9dof)/config/my_razor.yaml"/>
+    <arg name="arduino_port" default="/dev/ttyUSB0"/>
+
+    <!-- GPS -->
+    <include file="$(find nmea_navsat_driver)/launch/nmea_serial_driver.launch">
+        <arg name="port" value="$(arg gps_port)"/>
+        <arg name="baud" value="$(arg gps_baud)"/>
+    </include>
+
+    <!-- IMU -->
+    <include file="$(find razor_imu_9dof)/launch/razor-pub.launch">
+        <arg name="razor_config_file" value="$(arg imu_config_file)"/>
+    </include>
+
+    <!-- Arduino rosserial-->
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen">
+        <param name="port" value="$(arg arduino_port)" />
+    </node>
