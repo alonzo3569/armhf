@@ -17,9 +17,5 @@
         <arg name="razor_config_file" value="$(arg imu_config_file)"/>
     </include>
 
-    <!-- Arduino rosserial-->
-    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen">
-        <param name="port" value="$(arg arduino_port)" />
-    </node>
 
 </launch>
