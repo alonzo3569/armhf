@@ -60,10 +60,10 @@ class THRUST:
             #print"Thrust output R : ", self.output_R
 
 
-            # Publish fft data
+            # Publish data
             self.motor.header = Header(frame_id=THRUST.FRAME_ID, stamp=rospy.Time.now())
-            self,motor.left = self.output_L
-            self,motor.right = self.output_R
+            self.motor.left = self.output_L
+            self.motor.right = self.output_R
             self.pub.publish(self.motor)
 
         def thrustRudderToLR(self):

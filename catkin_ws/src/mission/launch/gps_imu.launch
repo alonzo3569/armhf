@@ -6,11 +6,11 @@
     <arg name="imu_config_file" default="$(find razor_imu_9dof)/config/my_razor.yaml"/>
     <arg name="arduino_port" default="/dev/ttyUSB0"/>
     <arg name="max_thrust_limit" default="100"/>
-    <arg name="min_thrust_limit" default="50"/>
+    <arg name="min_thrust_limit" default="40"/>
 
     <!-- Switch -->
     <!-- True: off, False: on -->
-    <arg name="thruster" default="true"/>
+    <arg name="Arduino" default="true"/>
 
     <!-- GPS -->
     <include file="$(find nmea_navsat_driver)/launch/nmea_serial_driver.launch">
@@ -23,13 +23,13 @@
         <arg name="razor_config_file" value="$(arg imu_config_file)"/>
     </include>
 
-    <group unless="$(arg thruster)">
+    <!-- DESIRED_THRUST/RUDDER to THRUST_L/R -->
+    <node pkg="motor" type="thrust_control.py" name="thrust_control_node" output="screen">
+        <param name="max_thrust_limit" type="double" value="$(arg max_thrust_limit)"/>
+        <param name="min_thrust_limit" type="double" value="$(arg min_thrust_limit)"/>
+    </node>
 
-        <!-- DESIRED_THRUST/RUDDER to THRUST_L/R -->
-        <node pkg="motor" type="thrust_control.py" name="thrust_control_node" output="screen">
-            <param name="max_thrust_limit" type="double" value="$(arg max_thrust_limit)"/>
-            <param name="min_thrust_limit" type="double" value="$(arg min_thrust_limit)"/>
-        </node>
+    <group unless="$(arg Arduino)">
 
         <!-- Arduino rosserial-->
         <node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen">
