@@ -32,11 +32,11 @@ class THRUST:
 
 
             # Subscriber
-            rospy.Subscriber("/DESIRED_THRUST", Float32, self.thrust_cb)
-            rospy.Subscriber("/DESIRED_RUDDER", Float32, self.rudder_cb)
+            rospy.Subscriber("DESIRED_THRUST", Float32, self.thrust_cb)
+            rospy.Subscriber("DESIRED_RUDDER", Float32, self.rudder_cb)
 
             # Publisher
-	    self.pub = rospy.Publisher("/motor", Motor, queue_size=10)
+	    self.pub = rospy.Publisher("motor", Motor, queue_size=10)
 
         def thrust_cb(self, msg):
 

@@ -1,7 +1,7 @@
 <launch>
 
     <!-- Params -->
-    <arg name="gps_port" default="/dev/ttyUSB0"/>
+    <arg name="gps_port" default="/dev/ttyAMA0"/>
     <arg name="gps_baud" default="4800"/>
     <arg name="imu_config_file" default="$(find razor_imu_9dof)/config/my_razor.yaml"/>
     <arg name="arduino_port" default="/dev/ttyUSB0"/>
