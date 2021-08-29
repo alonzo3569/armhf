@@ -17,8 +17,9 @@ class THRUST:
 	def __init__(self):
 
             # OnstartUp
-            self.max_thrust_limit = rospy.get_param('~max_thrust_limit', 100)
-            self.min_thrust_limit = rospy.get_param('~min_thrust_limit', 50)
+            self.max_thrust_limit = rospy.get_param('~max_thrust_limit', 70)
+            self.min_thrust_limit = rospy.get_param('~min_thrust_limit', 0)
+            self.cutoff  = rospy.get_param('~cutoff_value', 30)
 
             # Initialize
             self.motor = Motor()
@@ -59,11 +60,14 @@ class THRUST:
             #print"Thrust output L : ", self.output_L
             #print"Thrust output R : ", self.output_R
 
+            # 0830 adjustment
+            self.output_L = self.adjustment(self.output_L, self.cutoff * 0.01)
+            self.output_R = self.adjustment(self.output_R, self.cutoff * 0.01)
 
             # Publish data
             self.motor.header = Header(frame_id=THRUST.FRAME_ID, stamp=rospy.Time.now())
-            self.motor.left = self.output_L
-            self.motor.right = self.output_R
+            self.motor.left = self.output_L * 0.01
+            self.motor.right = self.output_R * 0.01
             self.pub.publish(self.motor)
 
         def thrustRudderToLR(self):
@@ -105,6 +109,20 @@ class THRUST:
             tmp = math.fabs(vel)
             value = self.min_thrust_limit + self.delta * tmp
             output = sign * value
+            return output
+
+        def adjustment(self, vel, cutoff): # input vel : -0.7~-0, 0~+0.7
+            sign = 1.0 if vel > 0.0 else -1.0
+            tmp = math.fabs(vel)
+            stop_value = cutoff 
+            # let value between stop_value & 0.5(thruster min output) become 0.5
+            if tmp > stop_value and tmp < 0.5:
+                output = 0.5
+            # let value smaller than stop_value become 0.0
+            elif tmp < stop_value:
+                output = 0.0
+            else:
+                output = vel
             return output
 
         def onShutdown(self):

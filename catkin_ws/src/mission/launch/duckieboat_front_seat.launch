@@ -1,13 +1,14 @@
 <launch>
 
     <!-- Params -->
-    <arg name="gps_port" default="/dev/ttyUSB0"/>
+    <arg name="gps_port" default="/dev/ttyUSB1"/>
     <arg name="gps_baud" default="4800"/>
     <arg name="imu_config_file" default="$(find razor_imu_9dof)/config/my_razor.yaml"/>
-    <arg name="arduino_port" default="/dev/ttyUSB1"/>
+    <arg name="arduino_port" default="/dev/ttyUSB0"/>
     <arg name="vehicle" default="duckieboat"/>
-    <arg name="max_thrust_limit" default="100"/>
-    <arg name="min_thrust_limit" default="40"/>
+    <arg name="max_thrust_limit" default="70"/> <!-- linear between 50~70-->
+    <arg name="min_thrust_limit" default="0"/>
+    <arg name="cutoff_value" default="200"/>     <!-- 0 between 0~30, 50 between 30~50 -->
 
 
     <group ns="$(arg vehicle)">
@@ -27,6 +28,7 @@
         <node pkg="motor" type="thrust_control.py" name="thrust_control_node" output="screen">
             <param name="max_thrust_limit" type="double" value="$(arg max_thrust_limit)"/>
             <param name="min_thrust_limit" type="double" value="$(arg min_thrust_limit)"/>
+            <param name="cutoff_value" type="double" value="$(arg cutoff_value)"/>
         </node>
 
         <!-- Arduino rosserial -->
