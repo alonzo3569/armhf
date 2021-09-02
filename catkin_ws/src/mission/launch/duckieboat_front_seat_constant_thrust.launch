@@ -6,9 +6,8 @@
     <arg name="imu_config_file" default="$(find razor_imu_9dof)/config/my_razor.yaml"/>
     <arg name="arduino_port" default="/dev/ttyUSB0"/>
     <arg name="vehicle" default="duckieboat"/>
-    <arg name="max_thrust_limit" default="70"/> <!-- linear between 50~70-->
-    <arg name="min_thrust_limit" default="0"/>
-    <arg name="cutoff_value" default="20"/>     <!-- 0 between 0~30, 50 between 30~50 -->
+    <arg name="thrust_constant" default="50"/>     
+    <arg name="cutoff_value" default="20"/>     
 
 
     <group ns="$(arg vehicle)">
@@ -25,9 +24,8 @@
         </include>
 
         <!-- DESIRED_THRUST/RUDDER to THRUST_L/R -->
-        <node pkg="motor" type="thrust_control.py" name="thrust_control_node" output="screen">
-            <param name="max_thrust_limit" type="double" value="$(arg max_thrust_limit)"/>
-            <param name="min_thrust_limit" type="double" value="$(arg min_thrust_limit)"/>
+        <node pkg="motor" type="constant_thrust_control.py" name="thrust_control_node" output="screen">
+            <param name="thrust_constant" type="double" value="$(arg thrust_constant)"/>
             <param name="cutoff_value" type="double" value="$(arg cutoff_value)"/>
         </node>
 

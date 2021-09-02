@@ -17,8 +17,7 @@ class THRUST:
 	def __init__(self):
 
             # OnstartUp
-            self.max_thrust_limit = rospy.get_param('~max_thrust_limit', 50)
-            self.min_thrust_limit = rospy.get_param('~min_thrust_limit', 50)
+            self.thrust_constant = rospy.get_param('~thrust_constant', 50)
             self.cutoff  = rospy.get_param('~cutoff_value', 20)
 
             # Initialize
@@ -29,7 +28,6 @@ class THRUST:
             self.R = 0.0
             self.output_L = 0.0
             self.output_R = 0.0
-            self.delta = (self.max_thrust_limit - self.min_thrust_limit) / 100.0
 
 
             # Subscriber
@@ -49,32 +47,21 @@ class THRUST:
 
             # Subcribe data
             self.rudder = msg.data
-            #print"Thust : ", self.thrust
-            #print"Rudder : ", self.rudder
 
             self.thrustRudderToLR()
-            #print"Thrust L : ", self.L
-            #print"Thrust R : ", self.R
-            self.output_L = self.valid_range(self.L)/ 100.0
-            self.output_R = self.valid_range(self.R)/ 100.0
-            #print"Thrust output L : ", self.output_L
-            #print"Thrust output R : ", self.output_R
-            rospy.loginfo("Thrust by moos L :  %f ", self.output_L)
-            rospy.loginfo("Thrust by moos R :  %f ", self.output_R)
+            rospy.loginfo("Thrust by moos L :  %f ", self.L)
+            rospy.loginfo("Thrust by moos R :  %f ", self.R)
 
-            # 0830 adjustment
-            rospy.loginfo("cutoff :  %f ", self.cutoff)
-            rospy.loginfo("cutoff :  %f ", self.cutoff * 0.01)
-            self.output_L = self.adjustment(self.output_L, self.cutoff * 0.01)
-            self.output_R = self.adjustment(self.output_R, self.cutoff * 0.01)
-
-            rospy.loginfo("Thrust after adj  L :  %f ", self.output_L)
-            rospy.loginfo("Thrust after adj  R :  %f ", self.output_R)
+            # Thrust to constant
+            self.output_L = self.constant_thrust(self.L/100.0)
+            self.output_R = self.constant_thrust(self.R/100.0)
+            rospy.loginfo("Constant thrust L :  %f ", self.output_L)
+            rospy.loginfo("Constant thrust R :  %f ", self.output_R)
 
             # Publish data
             self.motor.header = Header(frame_id=THRUST.FRAME_ID, stamp=rospy.Time.now())
-            self.motor.left = self.output_L * 0.01
-            self.motor.right = self.output_R * 0.01
+            self.motor.left = self.output_L  #* 0.01
+            self.motor.right = self.output_R #* 0.01
             self.pub.publish(self.motor)
 
         def thrustRudderToLR(self):
@@ -111,28 +98,16 @@ class THRUST:
         def clamp(self, v, minv, maxv):
             return min(maxv,max(minv, v))
 
-        def valid_range(self, vel):
-            sign = 1.0 if vel > 0.0 else -1.0
-            tmp = math.fabs(vel)
-            value = self.min_thrust_limit + self.delta * tmp
-            output = sign * value
+        def constant_thrust(self, value): # /100.0
+            sign = 1.0 if value > 0.0 else -1.0
+            tmp = math.fabs(value)
+            stop_value = self.cutoff * 0.01
+            if tmp < stop_value:
+                output = 0.0
+            else:
+                output = sign * self.thrust_constant * 0.01
             return output
 
-        def adjustment(self, vel, cutoff): # input vel : -0.7~-0, 0~+0.7
-            sign = 1.0 if vel > 0.0 else -1.0
-            tmp = math.fabs(vel)
-            stop_value = cutoff 
-            # let value between stop_value & 0.5(thruster min output) become 0.5
-            if tmp > stop_value and tmp < 0.5:
-                output = 0.5
-            # let value smaller than stop_value become 0.0
-            elif tmp < stop_value:
-                output = 0.0
-                rospy.loginfo("Stop value :  %f ", stop_value)
-                rospy.loginfo("tmp  value :  %f ", tmp)
-            else:
-                output = vel
-            return output
 
         def onShutdown(self):
             rospy.loginfo("Thrust_control node Shutdown.")
