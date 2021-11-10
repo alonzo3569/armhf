@@ -17,7 +17,7 @@ class THRUST:
 	def __init__(self):
 
             # OnstartUp
-            self.thrust_constant = rospy.get_param('~thrust_constant', 50)
+            self.thrust_constant = rospy.get_param('~thrust_constant', 70)
             self.cutoff  = rospy.get_param('~cutoff_value', 20)
 
             # Initialize
